@@ -14,6 +14,7 @@ if __name__ == "__main__":
     parser.add_argument('--prompt', type=str, required=False, help='the prompt to be used. It is required when loading a custom model_path.')
     parser.add_argument('--model_name', type=str, default=None, help='name of the pretrained model to be used')
     parser.add_argument('--model_path', type=str, default=None, help='path to a local model state dict to be used')
+    parser.add_argument('--pretrained_path', type=str, default=None, help='path to a local model state dict to be used')
     parser.add_argument('--output_dir', type=str, default='output', help='the directory to save the output')
     parser.add_argument('--image_prep', type=str, default='resize_512x512', help='the image preparation method')
     parser.add_argument('--direction', type=str, choices=['a2b', 'b2a'], help='the direction of translation. None for pretrained models, a2b or b2a for custom paths.')
@@ -29,12 +30,11 @@ if __name__ == "__main__":
         assert args.prompt is None, 'prompt is not required when loading a pretrained model.'
         assert args.direction is None, 'direction is not required when loading a pretrained model.'
     # initialize the model
-    model = CycleGAN_Turbo(pretrained_name=args.model_name, pretrained_path=args.model_path)
+    model = CycleGAN_Turbo(pretrained_name=args.model_name, pretrained_path=args.pretrained_path, model_path=args.model_path)
     model.eval()
     model.unet.enable_xformers_memory_efficient_attention()
     if args.use_fp16:
         model.half()
-
     # start inference
     os.makedirs(args.output_dir, exist_ok=True)
     T_val = build_transform(args.image_prep)

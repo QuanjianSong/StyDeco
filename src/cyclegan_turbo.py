@@ -124,18 +124,20 @@ def initialize_vae(pretrained_model_name_or_path, rank=4, return_lora_module_nam
 
 
 class CycleGAN_Turbo(torch.nn.Module):
-    def __init__(self, pretrained_name=None, pretrained_path=None, ckpt_folder="checkpoints", lora_rank_unet=8, lora_rank_vae=4):
+    def __init__(self, pretrained_name=None, pretrained_path=None, model_path=None, ckpt_folder="checkpoints", lora_rank_unet=8, lora_rank_vae=4):
         super().__init__()
-        self.tokenizer = AutoTokenizer.from_pretrained("/data/lxy/sqj/base_models/sd-turbo", subfolder="tokenizer")
+        breakpoint()
+        self.tokenizer = AutoTokenizer.from_pretrained(pretrained_path, subfolder="tokenizer")
+        
         #
-        self.text_encoder_a2b, text_encoder_lora_target_modules = initialize_text_encoder(16, return_lora_module_names=True)
+        self.text_encoder_a2b, text_encoder_lora_target_modules = initialize_text_encoder(pretrained_path, 16, return_lora_module_names=True)
         self.text_encoder_a2b.cuda().requires_grad_(False)
         self.text_encoder_b2a = copy.deepcopy(self.text_encoder_a2b) # 参数不共享，这里就不封装了
         self.text_encoder_b2a.cuda().requires_grad_(False)
         self.sched = make_1step_sched()
         #
-        vae = AutoencoderKL.from_pretrained("/data/lxy/sqj/base_models/sd-turbo", subfolder="vae")
-        unet = UNet2DConditionModel.from_pretrained("/data/lxy/sqj/base_models/sd-turbo", subfolder="unet")
+        vae = AutoencoderKL.from_pretrained(pretrained_path, subfolder="vae")
+        unet = UNet2DConditionModel.from_pretrained(pretrained_path, subfolder="unet")
         vae.encoder.forward = my_vae_encoder_fwd.__get__(vae.encoder, vae.encoder.__class__)
         vae.decoder.forward = my_vae_decoder_fwd.__get__(vae.decoder, vae.decoder.__class__)
         # add the skip connection convs
@@ -169,8 +171,8 @@ class CycleGAN_Turbo(torch.nn.Module):
             self.timesteps = torch.tensor([999], device="cuda").long()
             self.caption = "driving in the day"
             self.direction = "b2a"
-        elif pretrained_path is not None:
-            sd = torch.load(pretrained_path)
+        elif model_path is not None:
+            sd = torch.load(model_path)
             self.load_ckpt_from_state_dict(sd)
             self.timesteps = torch.tensor([999], device="cuda").long()
             self.caption = None

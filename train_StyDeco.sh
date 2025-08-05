@@ -6,11 +6,12 @@ EPOCH=40000
 BATCH_SIZE=1
 VAL_STEP=1000
 RANK_TEXT_ENCODER=16
+PRETRAINED_PATH="/data/lxy/sqj/base_models/sd-turbo"
 
 
 CUDA_VISIBLE_DEVICES=1 \
     python src/StyDeco_trainer.py \
-    --pretrained_model_name_or_path="/data/lxy/sqj/base_models/sd-turbo" \
+    --pretrained_model_name_or_path=PRETRAINED_PATH \
     --output_dir="outputs/$PROJECT_NAME" \
     --dataset_folder "examples/vangogh" \
     --train_img_prep "resize_286_randomcrop_256x256_hflip" \
