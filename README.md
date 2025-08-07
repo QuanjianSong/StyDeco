@@ -71,5 +71,10 @@ bash start_StyDeco.sh
 ## 🎓 Bibtex
 🤗 If you find this code helpful for your research, please cite:
 ```
-XXX
+@article{yang2025stydeco,
+  title={StyDeco: Unsupervised Style Transfer with Distilling Priors and Semantic Decoupling},
+  author={Yang, Yuanlin and Song, Quanjian and Gao, Zhexian and Wang, Ge and Li, Shanshan and Zhang, Xiaoyan},
+  journal={arXiv preprint arXiv:2508.01215},
+  year={2025}
+}
 ```
